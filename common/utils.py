@@ -1,7 +1,8 @@
 import json
 from common.variables import MAX_PACKAGE_LENGTH, ENCODING
+from app_decorators import Log
 
-
+@Log()
 def get_message(client):
     """
     Receive bytes and decode message.
@@ -20,6 +21,7 @@ def get_message(client):
     raise ValueError
 
 
+@Log()
 def send_message(sock, message):
     """
     Encode and send message.

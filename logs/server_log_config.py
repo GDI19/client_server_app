@@ -15,7 +15,7 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 
 file_handler_server_time_rotate = logging.handlers.TimedRotatingFileHandler(only_server_log_path, when='D', interval=1,
-                                                          backupCount=365, encoding='utf-8')
+                                                          backupCount=2, encoding='utf-8')
 file_handler_server_time_rotate.setLevel(logging.DEBUG)
 file_handler_server_time_rotate.setFormatter(formatter)
 

@@ -7,10 +7,11 @@ from common.utils import get_message, send_message
 
 import logging
 from logs import server_log_config
+from app_decorators import Log
 
 logger = logging.getLogger('server')
 
-
+@Log(logger)
 def process_client_message(message):
     """
     Receive message from client, check it.
@@ -44,11 +45,10 @@ def main():
         if listen_port < 1024 or listen_port > 65535:
             raise ValueError
     except IndexError:
-        print('После параметра -\'p\' необходимо указать номер порта.')
+        #print('После параметра -\'p\' необходимо указать номер порта.')
         logger.error('После параметра -\'p\' необходимо указать номер порта.')
         sys.exit(1)
     except ValueError:
-        print('Номер порта может быть указано только в диапазоне от 1024 до 65535.')
         logger.error('Номер порта может быть указано только в диапазоне от 1024 до 65535.')
         sys.exit(1)
 
@@ -58,7 +58,6 @@ def main():
         else:
             listen_address = ''
     except IndexError:
-        print('После параметра \'- a\' необходимо указать адрес, который будет слушать сервер.')
         logger.error('После параметра \'- a\' необходимо указать адрес')
         sys.exit(1)
 
@@ -70,15 +69,28 @@ def main():
 
     while True:
         client, client_address = transport.accept()
+        logger.info(f'Установлено соедение с ПК {client_address}')
         try:
             message_from_client = get_message(client)
-            logger.info(message_from_client)
+            logger.debug(f'Получено сообщение {message_from_client}')
+            print(message_from_client)
+
             response = process_client_message(message_from_client)
-            logger.debug(response)
+            logger.info(f'Cформирован ответ клиенту {response}')
+
             send_message(client, response)
-        except (ValueError, json.JSONDecodeError):
-            print('Принято некорректное сообщение от клиента.')
-            logger.error('Принято некорректное сообщение от клиента.')
+            logger.debug(f'Соединение с клиентом {client_address} закрывается.')
+            client.close()
+
+
+        except json.JSONDecodeError:
+            logger.error(f'Не удалось декодировать Json строку, '
+                         f'полученную от клиента {client_address}. Соединение закрывается.')
+            client.close()
+
+        except ValueError:
+            logger.error(f'От клиента {client_address} приняты некорректные данные. '
+                         f'Соединение закрывается.')
             client.close()
 
 if __name__ == '__main__':

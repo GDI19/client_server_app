@@ -8,7 +8,7 @@ server_client_log_path = os.path.join(PATH, 'server-client.log')
 
 logger = logging.getLogger('server')
 
-formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(module)s - %(message)s ")
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(module)s - %(message)s ")
 
 file_handler = logging.FileHandler(server_client_log_path, encoding='utf-8')
 file_handler.setLevel(logging.DEBUG)

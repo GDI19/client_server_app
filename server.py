@@ -17,10 +17,10 @@ logger = logging.getLogger('server')
 
 @Log(logger)
 def process_client_message(message, messages_list, client):
-    """
-    Receive message from client, check it.
+    """Receive message from client, check it.
+    if presence message send response. If message append it to the  messages list,
     :param message: dict
-    :return: response (dict)
+    :return:
     """
     logger.debug(f'Разбор сообщения от клиента : {message}')
 
@@ -77,7 +77,7 @@ def main():
     transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # transport.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     transport.bind((listen_address, listen_port))
-    transport.settimeout(1)
+    transport.settimeout(0.5)
 
     clients = []
     messages = []
@@ -121,6 +121,7 @@ def main():
                 MESSAGE_TEXT: messages[0][1]
             }
             del messages[0]
+
             for waiting_client in send_data_list:
                 try:
                     send_message(waiting_client, message)
